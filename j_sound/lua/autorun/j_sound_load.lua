@@ -3,8 +3,8 @@ j_sound.config = {}
 j_sound.add = {}
 j_sound.allowed = {}
 
-function j_sound.allowed(ply, team)
-    if table.HasValue(team, ply:Team()) then return true end
+function j_sound.allowed(ply, team, rank)
+    if table.HasValue(team, ply:Team()) or table.HasValue(rank, ply:GetUserGroup()) then return true end
 end
 
 if SERVER then
