@@ -1,4 +1,5 @@
 function j_sound.Menu()
+    if j_sound.SoundFrame and j_sound.SoundFrame:IsVisible() then return end
     if string.lower(j_sound.config.Position) == "gauche" then
         j_sound.Frame_Pos = -200
         j_sound.MoveTo_Open = 0
@@ -7,25 +8,25 @@ function j_sound.Menu()
         j_sound.MoveTo_Open = ScrW() - 200
     end
 
-    local SoundFrame = vgui.Create("DFrame")
-    SoundFrame:SetSize(200, j_sound.config.Hauteur)
-    SoundFrame:SetPos(j_sound.Frame_Pos, (ScrH() / 2) - (SoundFrame:GetTall() / 2))
-    SoundFrame:SetTitle("")
-    SoundFrame:SetDraggable(false)
-    SoundFrame:ShowCloseButton(false)
-    SoundFrame:SetKeyboardInputEnabled(false)
-    SoundFrame:MoveTo(j_sound.MoveTo_Open, (ScrH() / 2) - (SoundFrame:GetTall() / 2), .4, 0, -1)
+    j_sound.SoundFrame = vgui.Create("DFrame")
+    j_sound.SoundFrame:SetSize(200, j_sound.config.Hauteur)
+    j_sound.SoundFrame:SetPos(j_sound.Frame_Pos, (ScrH() / 2) - (j_sound.SoundFrame:GetTall() / 2))
+    j_sound.SoundFrame:SetTitle("")
+    j_sound.SoundFrame:SetDraggable(false)
+    j_sound.SoundFrame:ShowCloseButton(false)
+    j_sound.SoundFrame:SetKeyboardInputEnabled(false)
+    j_sound.SoundFrame:MoveTo(j_sound.MoveTo_Open, (ScrH() / 2) - (j_sound.SoundFrame:GetTall() / 2), .4, 0, -1)
 
-    SoundFrame.Paint = function(self, w, h)
+    j_sound.SoundFrame.Paint = function(self, w, h)
         surface.SetDrawColor(Color(28, 26, 29, 245))
         surface.DrawRect(0, 0, w, h)
         surface.SetDrawColor(j_sound.config.Couleur)
         surface.DrawOutlinedRect(0, 0, w, h)
     end
 
-    local SoundFrameClose = vgui.Create("DButton", SoundFrame)
+    local SoundFrameClose = vgui.Create("DButton", j_sound.SoundFrame)
     SoundFrameClose:SetSize(20, 20)
-    SoundFrameClose:SetPos(SoundFrame:GetWide() - 20, 0)
+    SoundFrameClose:SetPos(j_sound.SoundFrame:GetWide() - 20, 0)
     SoundFrameClose:SetText("")
 
     SoundFrameClose.Paint = function(self, w, h)
@@ -39,13 +40,13 @@ function j_sound.Menu()
     end
 
     SoundFrameClose.DoClick = function()
-        SoundFrame:MoveTo(j_sound.Frame_Pos, ScrH() / 2 - SoundFrame:GetTall() / 2, .4, 0, -1, function()
-            SoundFrame:Remove()
+        j_sound.SoundFrame:MoveTo(j_sound.Frame_Pos, ScrH() / 2 - j_sound.SoundFrame:GetTall() / 2, .4, 0, -1, function()
+            j_sound.SoundFrame:Remove()
             gui.EnableScreenClicker(false)
         end)
     end
 
-    local SoundDScrollPanel = vgui.Create("DScrollPanel", SoundFrame)
+    local SoundDScrollPanel = vgui.Create("DScrollPanel", j_sound.SoundFrame)
     SoundDScrollPanel:Dock(FILL)
     SoundDScrollPanel:DockMargin(0, 2, 0, 0)
 
@@ -67,7 +68,7 @@ function j_sound.Menu()
         draw.RoundedBox(0, 6, 0, 4, h + 22, Color(5, 5, 5, 205))
     end
 
-    local SoundFrameText = vgui.Create("DLabel", SoundFrame)
+    local SoundFrameText = vgui.Create("DLabel", j_sound.SoundFrame)
     SoundFrameText:SetFont("Trebuchet24")
     SoundFrameText:SetText(j_sound.config.Titre)
     SoundFrameText:SetPos(j_sound.config.TitrePosition, 4)
