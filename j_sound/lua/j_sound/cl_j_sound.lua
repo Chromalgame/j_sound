@@ -14,8 +14,13 @@ function j_sound.Menu()
     j_sound.SoundFrame:SetTitle("")
     j_sound.SoundFrame:SetDraggable(false)
     j_sound.SoundFrame:ShowCloseButton(false)
-    j_sound.SoundFrame:SetKeyboardInputEnabled(false)
     j_sound.SoundFrame:MoveTo(j_sound.MoveTo_Open, (ScrH() / 2) - (j_sound.SoundFrame:GetTall() / 2), .4, 0, -1)
+    if j_sound.config.ContextMenu == true then
+        j_sound.SoundFrame:MakePopup()
+    else
+        j_sound.SoundFrame:SetKeyboardInputEnabled(false)
+    end
+
 
     j_sound.SoundFrame.Paint = function(self, w, h)
         surface.SetDrawColor(Color(28, 26, 29, 245))
@@ -107,19 +112,38 @@ function j_sound.Menu()
     end
 end
 
-hook.Add("OnPlayerChat", "Sound.Open", function(ply, str)
-    if (ply ~= LocalPlayer()) or not ply:IsValid() then return end
-
-    if string.lower(str) == j_sound.config.ChatCommand then
+if j_sound.config.ContextMenu == true then
+    hook.Add("OnContextMenuOpen", "SoundMenu.Open.ContextMenu", function()
         if j_sound.config.WhiteList == true and table.HasValue(j_sound.config.WhiteListJobs, ply:Team()) then
             j_sound.Menu()
         elseif j_sound.config.WhiteList == false then
             j_sound.Menu()
         end
+    end)
+    hook.Add("OnContextMenuClose", "SoundMenu.Close.ContextMenu", function()
+        if j_sound.SoundFrame and j_sound.SoundFrame:IsVisible() then
+            j_sound.SoundFrame:MoveTo(j_sound.Frame_Pos, ScrH() / 2 - j_sound.SoundFrame:GetTall() / 2, .4, 0, -1, function()
+                j_sound.SoundFrame:Remove()
+                gui.EnableScreenClicker(false)
+            end)
+        end
+    end)
+else
+    hook.Add("OnPlayerChat", "SoundMenu.Open.Chat", function(ply, str)
+        if (ply ~= LocalPlayer()) or not ply:IsValid() then return end
 
-        return true
-    end
-end)
+        if string.lower(str) == j_sound.config.ChatCommand then
+            if j_sound.config.WhiteList == true and table.HasValue(j_sound.config.WhiteListJobs, ply:Team()) then
+                j_sound.Menu()
+            elseif j_sound.config.WhiteList == false then
+                j_sound.Menu()
+            end
+
+            return true
+        end
+    end)
+end
+
 
 if j_sound.config.F3_Fix == true then
     hook.Add("Think", "F3.EnableScreenClicker", function()
