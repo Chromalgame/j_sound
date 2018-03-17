@@ -112,7 +112,7 @@ function j_sound.Menu()
         end
     end
 
-    if !j_sound.Boutton:IsValid() then
+    if !IsValid(j_sound.Boutton) then
         j_sound.SoundFrame:Remove()
     end
 end
