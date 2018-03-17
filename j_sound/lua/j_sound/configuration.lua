@@ -18,7 +18,7 @@ j_sound.config.AntiSpam = 0.8 -- Secondes pour relancer un son
 j_sound.config.F3_Fix = false -- Mettre en true seulement si F3 ne fonctionne pas !!!
 
 --[[ Liste des sons (CONFIGURABLE) ]]--
-j_sound.add[1] = {
+j_sound.add[1] = { -- id unique
 	sound_name = "Excuse me", -- nom du son
 	sound_path = "vo/npc/female01/excuseme01.wav", -- chemin du son
 	allowed = function()
