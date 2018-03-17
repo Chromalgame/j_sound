@@ -1,5 +1,6 @@
 function j_sound.Menu()
-    if j_sound.SoundFrame and j_sound.SoundFrame:IsVisible() then return end
+    if IsValid(j_sound.SoundFrame) && j_sound.SoundFrame:IsVisible() then return end
+
     if string.lower(j_sound.config.Position) == "gauche" then
         j_sound.Frame_Pos = -200
         j_sound.MoveTo_Open = 0
@@ -15,12 +16,12 @@ function j_sound.Menu()
     j_sound.SoundFrame:SetDraggable(false)
     j_sound.SoundFrame:ShowCloseButton(false)
     j_sound.SoundFrame:MoveTo(j_sound.MoveTo_Open, (ScrH() / 2) - (j_sound.SoundFrame:GetTall() / 2), .4, 0, -1)
+
     if j_sound.config.ContextMenu == true then
         j_sound.SoundFrame:MakePopup()
     else
         j_sound.SoundFrame:SetKeyboardInputEnabled(false)
     end
-
 
     j_sound.SoundFrame.Paint = function(self, w, h)
         surface.SetDrawColor(Color(28, 26, 29, 245))
@@ -84,14 +85,14 @@ function j_sound.Menu()
     end
 
     for k, v in pairs(j_sound.add) do
-        if not v.allowed() then continue end
-        local Boutton = SoundDScrollPanel:Add("DButton")
-        Boutton:SetText(v.sound_name)
-        Boutton:SetTextColor(Color(150, 150, 150))
-        Boutton:Dock(TOP)
-        Boutton:DockMargin(0, 0, 1, 5)
+        if !v.allowed() then continue end
+        j_sound.Boutton = SoundDScrollPanel:Add("DButton")
+        j_sound.Boutton:SetText(v.sound_name)
+        j_sound.Boutton:SetTextColor(Color(150, 150, 150))
+        j_sound.Boutton:Dock(TOP)
+        j_sound.Boutton:DockMargin(0, 0, 1, 5)
 
-        Boutton.Paint = function(self, w, h)
+        j_sound.Boutton.Paint = function(self, w, h)
             surface.SetDrawColor(28, 26, 29, 245)
             surface.DrawRect(0, 0, w, h)
 
@@ -104,24 +105,26 @@ function j_sound.Menu()
             surface.DrawOutlinedRect(0, 0, w, h)
         end
 
-        Boutton.DoClick = function()
+        j_sound.Boutton.DoClick = function()
             net.Start("j_sound_emit")
             net.WriteUInt(k, 32)
             net.SendToServer()
         end
     end
+
+    if !j_sound.Boutton:IsValid() then
+        j_sound.SoundFrame:Remove()
+    end
 end
 
 if j_sound.config.ContextMenu == true then
     hook.Add("OnContextMenuOpen", "SoundMenu.Open.ContextMenu", function()
-        if j_sound.config.WhiteList == true and table.HasValue(j_sound.config.WhiteListJobs, ply:Team()) then
-            j_sound.Menu()
-        elseif j_sound.config.WhiteList == false then
-            j_sound.Menu()
-        end
+        if IsValid(j_sound.SoundFrame) then return end
+        j_sound.Menu()
     end)
+
     hook.Add("OnContextMenuClose", "SoundMenu.Close.ContextMenu", function()
-        if j_sound.SoundFrame and j_sound.SoundFrame:IsVisible() then
+        if IsValid(j_sound.SoundFrame) && j_sound.SoundFrame:IsVisible() then
             j_sound.SoundFrame:MoveTo(j_sound.Frame_Pos, ScrH() / 2 - j_sound.SoundFrame:GetTall() / 2, .4, 0, -1, function()
                 j_sound.SoundFrame:Remove()
                 gui.EnableScreenClicker(false)
@@ -130,20 +133,15 @@ if j_sound.config.ContextMenu == true then
     end)
 else
     hook.Add("OnPlayerChat", "SoundMenu.Open.Chat", function(ply, str)
-        if (ply ~= LocalPlayer()) or not ply:IsValid() then return end
+        if (ply != LocalPlayer()) || !ply:IsValid() then return end
 
         if string.lower(str) == j_sound.config.ChatCommand then
-            if j_sound.config.WhiteList == true and table.HasValue(j_sound.config.WhiteListJobs, ply:Team()) then
-                j_sound.Menu()
-            elseif j_sound.config.WhiteList == false then
-                j_sound.Menu()
-            end
+            j_sound.Menu()
 
             return true
         end
     end)
 end
-
 
 if j_sound.config.F3_Fix == true then
     hook.Add("Think", "F3.EnableScreenClicker", function()
