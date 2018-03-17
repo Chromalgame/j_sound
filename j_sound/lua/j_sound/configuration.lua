@@ -1,5 +1,5 @@
 --[[ Configuration ]]--
-j_sound.config.ContextMenu = true -- Ouvrir le sound menu avec le contexte menu a la place du ChatCommand
+j_sound.config.ContextMenu = false -- Ouvrir le sound menu avec le contexte menu a la place du ChatCommand
 
 if j_sound.config.ContextMenu == true then -- Ne pas toucher !!!
 	j_sound.config.Titre = "Sound Menu"
