@@ -127,7 +127,6 @@ if j_sound.config.ContextMenu == true then
         if IsValid(j_sound.SoundFrame) && j_sound.SoundFrame:IsVisible() then
             j_sound.SoundFrame:MoveTo(j_sound.Frame_Pos, ScrH() / 2 - j_sound.SoundFrame:GetTall() / 2, .4, 0, -1, function()
                 j_sound.SoundFrame:Remove()
-                gui.EnableScreenClicker(false)
             end)
         end
     end)
