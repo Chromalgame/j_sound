@@ -115,7 +115,7 @@ function j_sound.Menu()
                 net.SendToServer()
             elseif v.methode == 2 then
                 for _,v in pairs(player.GetAll()) do
-                    if (!v:Alive() && !v:IsValid()) || (v.StopSpam && v.StopSpam > CurTime()) then return end
+                    if (!v:Alive() || !v:IsValid()) || (v.StopSpam && v.StopSpam > CurTime()) then return end
                         surface.PlaySound(j_sound.add[k].sound_path)
                     v.StopSpam = CurTime() + j_sound.config.AntiSpam
                 end
