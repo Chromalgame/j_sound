@@ -10,6 +10,7 @@ end
 
 if SERVER then
     util.AddNetworkString("j_sound_emit")
+    util.AddNetworkString("j_sound_open_close")
     AddCSLuaFile("j_sound/configuration.lua")
     include("j_sound/configuration.lua")
     AddCSLuaFile("j_sound/cl_j_sound.lua")
