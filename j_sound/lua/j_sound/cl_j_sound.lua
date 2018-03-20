@@ -17,9 +17,12 @@ function j_sound.Menu()
     j_sound.SoundFrame:ShowCloseButton(false)
     j_sound.SoundFrame:MoveTo(j_sound.MoveTo_Open, (ScrH() / 2) - (j_sound.SoundFrame:GetTall() / 2), .4, 0, -1)
 
-    if j_sound.config.ContextMenu == true then
+    if j_sound.config.MethodeOuverture == 2 then
         j_sound.SoundFrame:MakePopup()
-    else
+    elseif j_sound.config.MethodeOuverture == 1 then
+        j_sound.SoundFrame:SetKeyboardInputEnabled(false)
+    elseif j_sound.config.MethodeOuverture == 3 then
+        j_sound.SoundFrame:MakePopup()
         j_sound.SoundFrame:SetKeyboardInputEnabled(false)
     end
 
@@ -106,18 +109,25 @@ function j_sound.Menu()
         end
 
         j_sound.Boutton.DoClick = function()
-            net.Start("j_sound_emit")
-            net.WriteUInt(k, 32)
-            net.SendToServer()
+            if v.methode == 1 then
+                net.Start("j_sound_emit")
+                net.WriteUInt(k, 32)
+                net.SendToServer()
+            elseif v.methode == 2 then
+                for _,v in pairs(player.GetAll()) do
+                    if (!v:Alive() && !v:IsValid()) || (v.StopSpam && v.StopSpam > CurTime()) then return end
+                        surface.PlaySound(j_sound.add[k].sound_path)
+                    v.StopSpam = CurTime() + j_sound.config.AntiSpam
+                end
+            end
         end
     end
-
     if !IsValid(j_sound.Boutton) then
         j_sound.SoundFrame:Remove()
     end
 end
 
-if j_sound.config.ContextMenu == true then
+if j_sound.config.MethodeOuverture == 2 then
     hook.Add("OnContextMenuOpen", "SoundMenu.Open.ContextMenu", function()
         if IsValid(j_sound.SoundFrame) then return end
         j_sound.Menu()
@@ -130,7 +140,7 @@ if j_sound.config.ContextMenu == true then
             end)
         end
     end)
-else
+elseif j_sound.config.MethodeOuverture == 1 then
     hook.Add("OnPlayerChat", "SoundMenu.Open.Chat", function(ply, str)
         if (ply != LocalPlayer()) || !ply:IsValid() then return end
 
@@ -140,10 +150,19 @@ else
             return true
         end
     end)
+    if j_sound.config.F3_Fix == true then
+        hook.Add("Think", "F3.EnableScreenClicker", function()
+            gui.EnableScreenClicker(input.IsKeyDown(KEY_F3))
+        end)
+    end
 end
 
-if j_sound.config.F3_Fix == true then
-    hook.Add("Think", "F3.EnableScreenClicker", function()
-        gui.EnableScreenClicker(input.IsKeyDown(KEY_F3))
-    end)
-end
+net.Receive("j_sound_open_close",function()
+    if IsValid(j_sound.SoundFrame) && j_sound.SoundFrame:IsVisible() then
+        j_sound.SoundFrame:MoveTo(j_sound.Frame_Pos, ScrH() / 2 - j_sound.SoundFrame:GetTall() / 2, .4, 0, -1, function()
+            j_sound.SoundFrame:Remove()
+        end)
+    elseif !IsValid(j_sound.SoundFrame) then
+        j_sound.Menu()
+    end
+end)
