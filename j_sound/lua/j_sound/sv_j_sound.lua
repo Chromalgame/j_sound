@@ -5,6 +5,15 @@ net.Receive("j_sound_emit", function(len, ply)
     ply.StopSpam = CurTime() + j_sound.config.AntiSpam
 end)
 
+net.Receive("j_sound_playsound", function(len, ply)
+	local tableNumber = net.ReadUInt(32)
+	if (!ply:Alive() || !ply:IsValid()) || (ply.StopSpam && ply.StopSpam > CurTime()) then return end
+	net.Start("j_sound_playsound")
+	net.WriteUInt(tableNumber, 32)
+	net.Broadcast()
+    ply.StopSpam = CurTime() + j_sound.config.AntiSpam
+end)
+
 if j_sound.config.MethodeOuverture == 3 then
 	hook.Add( "PlayerButtonDown", "SoundMenu.OpenClose.Touche", function(ply, btn) 
 		if !ply:Alive() || !ply:IsValid() then return end
