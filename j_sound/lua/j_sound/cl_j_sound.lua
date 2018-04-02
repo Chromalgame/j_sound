@@ -114,11 +114,9 @@ function j_sound.Menu()
                 net.WriteUInt(k, 32)
                 net.SendToServer()
             elseif v.methode == 2 then
-                for _,v in pairs(player.GetAll()) do
-                    if (!v:Alive() || !v:IsValid()) || (v.StopSpam && v.StopSpam > CurTime()) then return end
-                        surface.PlaySound(j_sound.add[k].sound_path)
-                    v.StopSpam = CurTime() + j_sound.config.AntiSpam
-                end
+                net.Start("j_sound_playsound")
+                net.WriteUInt(k, 32)
+                net.SendToServer()
             end
         end
     end
@@ -156,6 +154,11 @@ elseif j_sound.config.MethodeOuverture == 1 then
         end)
     end
 end
+
+net.Receive("j_sound_playsound",function()
+    local tableNumber = net.ReadUInt(32)
+    surface.PlaySound(j_sound.add[tableNumber].sound_path)
+end)
 
 net.Receive("j_sound_open_close",function()
     if IsValid(j_sound.SoundFrame) && j_sound.SoundFrame:IsVisible() then
